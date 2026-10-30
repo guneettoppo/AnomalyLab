@@ -3,9 +3,8 @@ data/
 reference/
 labels/
 
-# generated artifacts
+# generated artifacts (figures ARE committed: they are the report)
 outputs/
-reports/*.png
 
 __pycache__/
 *.pyc
