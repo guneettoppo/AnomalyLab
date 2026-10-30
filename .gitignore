@@ -1,0 +1,12 @@
+# downloaded corpus + NAB reference results (reproducible via scripts/download_data.py)
+data/
+reference/
+labels/
+
+# generated artifacts
+outputs/
+reports/*.png
+
+__pycache__/
+*.pyc
+.venv/
