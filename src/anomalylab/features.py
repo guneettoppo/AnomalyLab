@@ -142,8 +142,8 @@ def tail_threshold(raw: np.ndarray, prob_len: int, quantile: float) -> float:
     detector produced during its unlabelled learning period.
 
     An exact quantile, so "fire above it" means "fire on the top
-    (1 - quantile) fraction of what this stream looked like before we started
-    watching" — a rule an operator can set without any labels.
+    (1 - quantile) fraction of what this stream looked like before monitoring
+    started" — a rule an operator can set without any labels.
     """
     ref = raw[:prob_len] if prob_len > 1 else raw
     return float(np.quantile(ref, quantile))

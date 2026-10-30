@@ -2,7 +2,7 @@
 
 NAB ships, for every detector, one results CSV per series (`anomaly_score`
 column) plus `<detector>_standard_scores.csv` holding the per-file score it
-reported at the corpus-optimal threshold.  If our port is faithful, feeding the
+reported at the corpus-optimal threshold.  If my port is faithful, feeding the
 shipped `anomaly_score` column through `sweep_file()` must reproduce those
 per-file scores, and the normalised corpus score must match
 `results/final_results.json`.

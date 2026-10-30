@@ -1,11 +1,13 @@
-"""Download the NAB corpus (data + labels) and the reference results used to
-validate our scorer implementation.
+"""Download the NAB corpus (data + labels) and, optionally, the published results
+the scorer is checked against.
 
-Everything lands under data/ and labels/ so the rest of the pipeline is offline.
-Uses urllib with retries because this network drops connections often.
+Everything lands under data/ and labels/ so the rest of the pipeline runs offline.
+Retries are here because this connection drops a lot; nothing else depends on
+being online once the download has succeeded.
 """
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 import time
@@ -34,6 +36,11 @@ def fetch(url: str, retries: int = 5, timeout: int = 60) -> bytes:
 
 
 def main() -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--data-only", action="store_true",
+                    help="skip NAB's published results (~76 MB) and fetch just the corpus")
+    args = ap.parse_args()
+
     (ROOT / "data").mkdir(exist_ok=True)
     (ROOT / "labels").mkdir(exist_ok=True)
     (ROOT / "reference").mkdir(exist_ok=True)
@@ -42,10 +49,11 @@ def main() -> int:
     paths = [n["path"] for n in tree["tree"]]
     data_files = [p for p in paths if p.startswith("data/") and p.endswith(".csv")]
     ref_files = []
-    for det in REF_DETECTORS:
-        ref_files += [p for p in paths
-                      if p.startswith(f"results/{det}/") and p.endswith(".csv")]
-    ref_files.append("results/final_results.json")
+    if not args.data_only:
+        for det in REF_DETECTORS:
+            ref_files += [p for p in paths
+                          if p.startswith(f"results/{det}/") and p.endswith(".csv")]
+        ref_files.append("results/final_results.json")
     ref_files.append("labels/combined_windows.json")
 
     print(f"downloading {len(data_files)} series, {len(ref_files)} reference files")

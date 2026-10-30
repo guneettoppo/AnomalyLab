@@ -200,7 +200,7 @@ def optimize_threshold(sweeps: dict[str, FileSweep],
     NAB optimises one threshold per detector over the whole corpus (not per
     file), which is what a deployment looks like.  Each file's score is a step
     function of the threshold, so the optimum lies on one of the observed score
-    levels; we evaluate a quantile grid of those levels, weighted towards the
+    levels; I evaluate a quantile grid of those levels, weighted towards the
     upper tail where the useful thresholds live, and take the maximum.
     """
     all_thresholds = np.concatenate([sweeps[k].thresholds for k in sweeps])

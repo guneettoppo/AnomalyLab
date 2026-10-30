@@ -72,6 +72,9 @@ def main() -> int:
                     help="deployable threshold = this quantile of probation-period scores")
     ap.add_argument("--detectors", default="")
     ap.add_argument("--limit", type=int, default=0, help="only first N series (debug)")
+    ap.add_argument("--out-dir", default="",
+                    help="where to write CSVs + metrics.json (default outputs/; "
+                         "use a scratch dir for smoke runs so real results aren't clobbered)")
     args = ap.parse_args()
     warnings.filterwarnings("ignore", category=RuntimeWarning)
 
@@ -83,8 +86,10 @@ def main() -> int:
         wanted = [d.strip() for d in args.detectors.split(",") if d.strip()]
         dets = {k: v for k, v in dets.items() if k in wanted}
 
-    (ROOT / "outputs").mkdir(exist_ok=True)
-    (ROOT / "reports").mkdir(exist_ok=True)
+    out_dir = Path(args.out_dir) if args.out_dir else ROOT / "outputs"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    if out_dir == ROOT / "outputs":
+        (ROOT / "reports").mkdir(exist_ok=True)
 
     rows: list[dict] = []
     alarms: list[dict] = []
@@ -167,10 +172,10 @@ def main() -> int:
         })
     board_df = pd.DataFrame(board).sort_values("nab_score", ascending=False)
 
-    per_series.to_csv(ROOT / "outputs" / "per_series.csv", index=False)
-    board_df.to_csv(ROOT / "outputs" / "leaderboard.csv", index=False)
-    pd.DataFrame(alarms).to_csv(ROOT / "outputs" / "alarms.csv", index=False)
-    with open(ROOT / "reports" / "metrics.json", "w") as fh:
+    per_series.to_csv(out_dir / "per_series.csv", index=False)
+    board_df.to_csv(out_dir / "leaderboard.csv", index=False)
+    pd.DataFrame(alarms).to_csv(out_dir / "alarms.csv", index=False)
+    with open(out_dir / "metrics.json", "w") as fh:
         json.dump({
             "profile": args.profile,
             "deployable_quantile": args.quantile,

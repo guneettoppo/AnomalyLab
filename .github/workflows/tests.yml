@@ -1,0 +1,32 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Fetch corpus
+        run: python scripts/download_data.py --data-only
+
+      - name: Scorer and detector checks
+        run: python -m unittest discover -s tests -v
+
+      - name: End-to-end smoke run (3 streams)
+        run: python scripts/run_benchmark.py --limit 3 --quantile 0.999 --out-dir ci-artifacts
